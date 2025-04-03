@@ -1,13 +1,12 @@
 const users = require("../database/models/userModels");
 
 //impoted jwt after installing it
-const jwt=require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 
 //register controller after this register router is routed
 
 exports.registerController = async (req, res) => {
   const { username, email, password } = req.body;
-
 
   try {
     const existingUser = await users.findOne({ email });
@@ -35,15 +34,15 @@ exports.registerController = async (req, res) => {
 exports.loginController = async (req, res) => {
   const { email, password } = req.body;
   try {
-    let existingUser = await users.findOne({ email,password });
+    let existingUser = await users.findOne({ email, password });
     if (existingUser) {
+      //jwt.sign is used to generate encript the encripted code
+      const token = jwt.sign(
+        { userId: existingUser._id },
+        process.env.JWTSECRETKEY
+      );
 
-
-       //jwt.sign is used to generate encript the encripted code 
-      const token=jwt.sign({userId:existingUser._id},process.env.JWTSECRETKEY)
-
-      
-      res.status(200).json({user:existingUser,token:token});
+      res.status(200).json({ user: existingUser, token: token });
     } else {
       res.status(401).json({ message: "invalid username/password" });
     }
@@ -51,7 +50,3 @@ exports.loginController = async (req, res) => {
     res.status(500).json({ eooro: err });
   }
 };
-
-
-
-

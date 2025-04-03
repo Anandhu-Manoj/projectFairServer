@@ -9,8 +9,3 @@ mongoose
     console.log("mongo connection failed");
     console.log(err);
   });
-
-
-  
-
-

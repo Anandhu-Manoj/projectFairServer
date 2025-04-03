@@ -13,9 +13,8 @@ exports.addProjects = async (req, res) => {
   const projectImg = req.file.filename;
   console.log(req.file);
 
-
   try {
-    let existingProject = await project.findOne({projectGitLink});
+    let existingProject = await project.findOne({ projectGitLink });
     if (existingProject) {
       res.status(409).json("Project Already Exists");
     } else {
@@ -26,13 +25,46 @@ exports.addProjects = async (req, res) => {
         projectGitLink,
         projectOverview,
         projectWebsiteLink,
-        userId
+        userId,
       });
-      
-      await newProject.save()
-      res.status(201).json(newProject)
+
+      await newProject.save();
+      res.status(201).json(newProject);
     }
   } catch (err) {
     res.status(500).json("error occured");
+  }
+};
+
+exports.getHomeProjects = async (req, res) => {
+  console.log("reached");
+  try {
+    let data = await project.find().limit(3);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+};
+
+exports.getAllProjects = async (req, res) => {
+  let { search } = req.query;
+
+  try {
+    let data = await project.find({
+      projectLanguage: { $regex: search, $options: 'i' },
+    });
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+exports.userSpeceficProjects = async (req, res) => {
+  let userId = req.userId;
+  try {
+    let data = await project.find({ userId });
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json(err);
   }
 };
